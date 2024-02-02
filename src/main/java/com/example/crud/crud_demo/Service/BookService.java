@@ -20,25 +20,16 @@ public class BookService {
     }
 
 
-    public BookModel updateModel(BookModel BookModelBody, Long id) {
-
-        Optional<BookModel> existingBookModelOptional = bookRepository.findById(id);
-
-        if(existingBookModelOptional.isPresent()) {
-
-            BookModel updatedBookModel = existingBookModelOptional.get();
-
-            if(BookModelBody.getTitle() != null)
-                updatedBookModel.setTitle(BookModelBody.getTitle());
-
-            if(BookModelBody.getAuthor() != null)
-                updatedBookModel.setAuthor(BookModelBody.getAuthor());
-
-            return bookRepository.save(updatedBookModel);
-        } else {
-            return null;
-        }
+    public BookModel updateModel(BookModel bookModelBody, Long id) {
+        return bookRepository.findById(id)
+                .map(existingBookModel -> {
+                    if (bookModelBody.getTitle() != null) existingBookModel.setTitle(bookModelBody.getTitle());
+                    if (bookModelBody.getAuthor() != null) existingBookModel.setAuthor(bookModelBody.getAuthor());
+                    return bookRepository.save(existingBookModel);
+                })
+                .orElse(null);
     }
+
 
     public String deleteBook(Long id) {
         return "book with " + id + " has been deleted";
